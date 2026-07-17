@@ -1,0 +1,11 @@
+export const EXTENSION_KEY = 'relational_lens';
+export const EXTENSION_NAME = 'third-party/relational-lens';
+export const EXTENSION_TEMPLATE_PATH = 'dist/settings';
+export const DYNAMIC_PROMPT_KEY = 'relational_lens_dynamic';
+export const WRITER_CONTRACT_PROMPT_KEY = 'relational_lens_writer_contract';
+export const DEFAULT_MAX_OUTPUT_TOKENS = 16384;
+export const DEFAULT_RECENT_MESSAGE_COUNT = 12;
+export const MAX_INJECTED_BRIEF_CHARACTERS = 5_000;
+export const ANALYST_MAX_RETRIES = 2;
+export const ANALYST_RETRY_BACKOFF_MS = [1_000, 2_000];
+export const ANALYST_TIMEOUT_MS = 30_000;

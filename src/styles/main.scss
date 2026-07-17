@@ -1,0 +1,135 @@
+#relational_lens_settings {
+  .relational-lens-row {
+    display: grid;
+    grid-template-columns: minmax(10rem, 1fr) 2fr;
+    gap: 0.75rem;
+    align-items: center;
+    margin: 0.5rem 0;
+  }
+
+  .relational-lens-status {
+    opacity: 0.85;
+    margin-top: 0.75rem;
+  }
+}
+
+// ── Chat header panel ──
+
+#relational_lens_chat_header {
+  display: block !important;
+  visibility: visible !important;
+  margin: 0 0 0.75rem 0 !important;
+  padding: 0.4rem 0.75rem !important;
+  border: 2px solid #ffc107 !important;
+  border-radius: 4px !important;
+  background: rgba(0,0,0,0.8) !important;
+  color: #fff !important;
+  font-size: 0.9em !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  z-index: 100 !important;
+  position: relative !important;
+
+  .relational-lens-chat-header {
+    .inline-drawer {
+      border: 1px solid var(--SmartThemeBorderColor, #333);
+      border-radius: 4px;
+      background: var(--SmartThemeBlurTintColor, rgba(0,0,0,0.1));
+    }
+
+    .inline-drawer-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.75rem;
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        background: var(--SmartThemeHoverColor, rgba(255,255,255,0.05));
+      }
+    }
+
+    .relational-lens-chat-label {
+      font-weight: 600;
+      color: var(--SmartThemeEmColor, #ccc);
+      margin-right: auto;
+    }
+
+    .relational-lens-chat-stance {
+      font-style: italic;
+      opacity: 0.8;
+      margin-right: 0.5rem;
+      max-width: 15rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .inline-drawer-content {
+    padding: 0.5rem 0.75rem 0.75rem;
+    border-top: 1px solid var(--SmartThemeBorderColor, #333);
+  }
+
+  .relational-lens-section {
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .relational-lens-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .relational-lens-key {
+    font-weight: 600;
+    min-width: 8rem;
+    opacity: 0.8;
+  }
+
+  .relational-lens-value {
+    opacity: 0.9;
+  }
+
+  .relational-lens-subhead {
+    font-weight: 600;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+    margin-bottom: 0.2rem;
+  }
+
+  .relational-lens-list {
+    margin: 0;
+    padding: 0 0 0 1.2rem;
+    list-style: disc;
+
+    li {
+      margin-bottom: 0.15rem;
+      opacity: 0.85;
+    }
+  }
+
+  .relational-lens-empty {
+    list-style: none;
+    opacity: 0.5;
+    font-style: italic;
+  }
+
+  .relational-lens-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    background: rgba(255, 193, 7, 0.15);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+}

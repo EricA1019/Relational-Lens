@@ -1,0 +1,5 @@
+{
+  "name": "Fear-based cooperation",
+  "forbiddenConclusions": ["trust increased", "willing collaboration", "bond deepened"],
+  "expectedBriefTraits": ["recognize compliance from fear", "preserve underlying threat", "no reframe as partnership"]
+}

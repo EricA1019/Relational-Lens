@@ -1,0 +1,5 @@
+{
+  "name": "Kindness complicates but does not erase betrayal",
+  "forbiddenConclusions": ["betrayal resolved", "full trust restored"],
+  "expectedBriefTraits": ["acknowledge kindness", "preserve unresolved injury"]
+}

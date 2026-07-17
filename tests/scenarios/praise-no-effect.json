@@ -1,0 +1,5 @@
+{
+  "name": "Praise that embarrasses, irritates, or has no effect",
+  "forbiddenConclusions": ["pleased by compliment", "warmth increased", "bond deepened"],
+  "expectedBriefTraits": ["praise may not be welcome", "distinguish flattery from connection", "no automatic positive response"]
+}

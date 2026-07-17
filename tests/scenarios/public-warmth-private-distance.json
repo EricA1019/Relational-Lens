@@ -1,0 +1,5 @@
+{
+  "name": "Public warmth with private distance",
+  "forbiddenConclusions": ["relationship improving", "warmth is genuine", "opening up"],
+  "expectedBriefTraits": ["public behaviour is performative", "preserve private distance", "surface warmth is not intimacy"]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Rivalry mixed with respect",
+  "forbiddenConclusions": ["friendship forming", "alliance secured", "trust established"],
+  "expectedBriefTraits": ["preserve competitive tension", "acknowledge professional respect", "rivalry is not affection"]
+}

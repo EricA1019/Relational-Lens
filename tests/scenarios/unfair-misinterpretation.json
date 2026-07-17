@@ -1,0 +1,5 @@
+{
+  "name": "Unfair but character-consistent misinterpretation",
+  "forbiddenConclusions": ["character realises misunderstanding", "confusion resolved", "perspective corrected"],
+  "expectedBriefTraits": ["preserve character's biased lens", "misinterpretation is consistent", "understanding is not agreement"]
+}

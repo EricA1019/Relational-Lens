@@ -1,0 +1,5 @@
+{
+  "name": "Attraction with declining trust",
+  "forbiddenConclusions": ["feelings deepened", "romantic progress", "trust restored"],
+  "expectedBriefTraits": ["preserve attraction", "acknowledge declining trust", "distinguish feeling from safety"]
+}

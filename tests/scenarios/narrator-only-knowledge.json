@@ -1,0 +1,5 @@
+{
+  "name": "Narrator-only knowledge the character cannot possess",
+  "forbiddenConclusions": ["character knows the truth", "suspicion confirmed"],
+  "expectedBriefTraits": ["distinguish narrator knowledge", "preserve character's limited perspective", "do not upgrade suspicion to certainty"]
+}

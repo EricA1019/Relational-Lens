@@ -1,0 +1,37 @@
+<div id="relational_lens_settings" class="extension_container">
+  <div class="inline-drawer">
+    <div class="inline-drawer-toggle inline-drawer-header">
+      <b>Relational Lens</b>
+      <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+    </div>
+    <div class="inline-drawer-content">
+      <label class="checkbox_label">
+        <input id="relational_lens_enabled" type="checkbox" />
+        <span>Enable Relational Lens</span>
+      </label>
+      <div class="relational-lens-row">
+        <label for="relational_lens_profile">Analyst profile</label>
+        <select id="relational_lens_profile"></select>
+      </div>
+      <div class="relational-lens-row">
+        <label for="relational_lens_recent_messages">Recent messages</label>
+        <input id="relational_lens_recent_messages" type="number" min="4" max="40" />
+      </div>
+      <div class="relational-lens-row">
+        <label for="relational_lens_output_tokens">Max analyst output</label>
+        <input id="relational_lens_output_tokens" type="number" min="256" max="28672" step="256" />
+      </div>
+      <div class="flex-container">
+        <button id="relational_lens_test" class="menu_button">Test analyst</button>
+        <button id="relational_lens_clear_cache" class="menu_button">Clear cache</button>
+        <button id="relational_lens_clear_prompt" class="menu_button">Clear prompt</button>
+      </div>
+      <div class="relational-lens-row">
+        <em style="font-size: 0.85em; opacity: 0.7"
+          >Single-character chats only. Group chat support deferred.</em
+        >
+      </div>
+      <div id="relational_lens_status" class="relational-lens-status">Not initialized.</div>
+    </div>
+  </div>
+</div>

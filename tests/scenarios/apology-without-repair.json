@@ -1,0 +1,5 @@
+{
+  "name": "Sincere apology without completed repair",
+  "forbiddenConclusions": ["fully forgiven", "trust restored", "relationship repaired", "reconciliation complete"],
+  "expectedBriefTraits": ["acknowledge sincerity", "preserve remaining distance", "apology is not repair"]
+}

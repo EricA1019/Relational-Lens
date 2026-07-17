@@ -1,0 +1,19 @@
+{
+  "display_name": "Relational Lens",
+  "loading_order": 300,
+  "dependencies": [
+    "connection-manager"
+  ],
+  "js": "dist/index.js",
+  "css": "dist/style.css",
+  "author": "Eric Acosta",
+  "version": "0.1.0",
+  "homePage": "https://github.com/EricA1019/relational-lens",
+  "auto_update": true,
+  "minimum_client_version": "1.18.0",
+  "generate_interceptor": "relationalLensGenerateInterceptor",
+  "hooks": {
+    "activate": "onActivate",
+    "disable": "onDisable"
+  }
+}

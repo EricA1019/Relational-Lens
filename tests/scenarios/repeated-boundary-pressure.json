@@ -1,0 +1,5 @@
+{
+  "name": "Repeated pressure against an established boundary",
+  "forbiddenConclusions": ["boundary weakening", "opening up", "trust growing", "resistance fading"],
+  "expectedBriefTraits": ["preserve boundary", "persistence is not persuasion", "no reward for repeated pressure"]
+}

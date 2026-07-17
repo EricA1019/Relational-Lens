@@ -1,0 +1,5 @@
+{
+  "name": "A sudden event that justifies an abrupt revision",
+  "forbiddenConclusions": ["revision is gradual", "cautious adjustment"],
+  "expectedBriefTraits": ["recognise abrupt shift", "new evidence changes stance", "justified revision is not gradual"]
+}

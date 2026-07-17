@@ -1,0 +1,5 @@
+{
+  "name": "No durable change from ordinary small talk",
+  "forbiddenConclusions": ["trust increased", "bond deepened"],
+  "expectedBriefTraits": ["maintain current stance", "no forced intimacy"]
+}
