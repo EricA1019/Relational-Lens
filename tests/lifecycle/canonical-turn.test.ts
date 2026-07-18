@@ -70,3 +70,40 @@ test('finds closest assistant before the latest user message', () => {
   expect(turn!.previousAssistantContent).toBe('Recent response.');
   expect(turn!.currentUserContent).toBe('Latest query.');
 });
+
+// ── Phase D: message index tracking ──
+
+test('returns assistantMessageIndex for preceding assistant', () => {
+  const chat = [
+    { role: 'assistant', content: 'Reply.' },    // index 0
+    { role: 'user', content: 'Query.' },          // index 1
+  ];
+  const turn = resolveCanonicalTurn(chat);
+  expect(turn).not.toBeNull();
+  expect(turn!.assistantMessageIndex).toBe(0);
+});
+
+test('assistantMessageIndex is -1 when no preceding assistant', () => {
+  const chat = [
+    { role: 'system', content: 'Setup.' },
+    { role: 'user', content: 'First message.' },
+  ];
+  const turn = resolveCanonicalTurn(chat);
+  expect(turn).not.toBeNull();
+  expect(turn!.assistantMessageIndex).toBe(-1);
+});
+
+test('assistantMessageIndex points to correct message in multi-turn chat', () => {
+  const chat = [
+    { role: 'user', content: 'Hello.' },           // 0
+    { role: 'assistant', content: 'Hi.' },          // 1
+    { role: 'user', content: 'How are you?' },      // 2
+    { role: 'assistant', content: 'Good, thanks.' },// 3
+    { role: 'user', content: 'Latest query.' },     // 4
+  ];
+  const turn = resolveCanonicalTurn(chat);
+  expect(turn).not.toBeNull();
+  expect(turn!.assistantMessageIndex).toBe(3);
+  expect(turn!.previousAssistantContent).toBe('Good, thanks.');
+  expect(turn!.currentUserContent).toBe('Latest query.');
+});

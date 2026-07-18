@@ -10,7 +10,6 @@ import { resolveCanonicalTurn } from './canonical-turn.js';
 import { turnCache } from './turn-cache.js';
 import { createTurnFingerprint } from './turn-fingerprint.js';
 import { createDebugLogger } from '../util/debug-logger.js';
-import { updateStatusView } from '../ui/status-view.js';
 
 const debug = createDebugLogger(getSettings);
 
@@ -34,7 +33,6 @@ export class TurnCoordinator {
     const context = getStContext();
     if (context.groupId) {
       console.warn('[Relational Lens] skipped: group chat');
-      updateStatusView('Relational Lens is not available in group chats.');
       return;
     }
     const turn = resolveCanonicalTurn(input.chat);
@@ -59,11 +57,13 @@ export class TurnCoordinator {
         return typeof last?.swipe_id === 'number' ? last.swipe_id : 0;
       } catch { return 0; }
     })();
+    const metaMessageIndex = turn.assistantMessageIndex;
     const makeMeta = () => ({
       turnNumber: (context.chat as any[])?.length ?? 0,
       swipeId,
       timestamp: Date.now(),
       fingerprint,
+      messageIndex: metaMessageIndex,
     });
 
     const cached = turnCache.getCompleted(fingerprint);
@@ -122,6 +122,5 @@ export class TurnCoordinator {
     }
     this.injectBrief(resultWithMeta.sceneBrief);
     this.onAnalysisComplete?.(resultWithMeta);
-    updateStatusView('Ready.');
   }
 }

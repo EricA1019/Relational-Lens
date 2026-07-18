@@ -3,8 +3,7 @@ import { StConnectionProfileAnalystClient } from './connection-profile-client.js
 import { clearAllPrompts, injectSceneBrief } from './prompt-injection.js';
 import { getSettings } from './settings-repository.js';
 import { createDebugLogger } from '../util/debug-logger.js';
-import { updateChatHeader, showAnalyzing, showError, removeChatHeader } from '../ui/chat-header.js';
-import { saveAnalysisToMessage, injectMessageFooter } from '../ui/message-footer.js';
+import { saveAnalysisToMessage, renderAnalysisFooter } from '../ui/message-footer.js';
 import { getStContext } from './context.js';
 import type { AnalysisResult } from '../analyst/contracts.js';
 
@@ -12,22 +11,22 @@ const debug = createDebugLogger(getSettings);
 
 let coordinator: TurnCoordinator | null = null;
 
+/**
+ * Pending analysis result — set during generate_interceptor,
+ * consumed and cleared by CHARACTER_MESSAGE_RENDERED.
+ * This bridges the gap between "analysis completes before message exists"
+ * and "footer can only be rendered after message is in DOM."
+ */
+let pendingResult: AnalysisResult | null = null;
+
 function getCoordinator(): TurnCoordinator {
   if (!coordinator) {
     coordinator = new TurnCoordinator(
       new StConnectionProfileAnalystClient(),
       injectSceneBrief,
       (result: AnalysisResult) => {
-        updateChatHeader(result);
-        saveAnalysisToMessage(result);
-        // Inject footer into the last assistant message's DOM
-        const chat = getStContext().chat as any[];
-        if (chat?.length) {
-          const lastMsg = [...chat].reverse().find((m: any) => m?.role === 'assistant' || m?.is_user === false);
-          if (lastMsg?.index !== undefined) {
-            injectMessageFooter(lastMsg.index, result);
-          }
-        }
+        // Store for CHARACTER_MESSAGE_RENDERED to consume
+        pendingResult = result;
       },
     );
   }
@@ -40,26 +39,18 @@ globalThis.relationalLensGenerateInterceptor = async (
   _abort: unknown,
   generationType?: string,
 ): Promise<void> => {
-  console.warn('[Relational Lens] 🔥 FIRED', { generationType, enabled: getSettings().enabled });
   try {
     if (!getSettings().enabled) {
-      console.warn('[Relational Lens] DISABLED — skipping');
       clearAllPrompts();
-      removeChatHeader();
       return;
     }
-    console.warn('[Relational Lens] → showAnalyzing...');
-    showAnalyzing();
-    console.warn('[Relational Lens] → calling coordinator...');
     await getCoordinator().handleGeneration({
       chat,
       contextSize,
       ...(generationType !== undefined ? { generationType } : {}),
     });
-    console.warn('[Relational Lens] ✅ done');
   } catch (error: unknown) {
     console.error('[Relational Lens] FAILED', error);
-    showError(error instanceof Error ? error.message : String(error));
     clearAllPrompts();
   }
 };
@@ -69,52 +60,45 @@ console.log('[Relational Lens] ✅ Interceptor registered');
 export function installGenerationInterceptor(): void {
   debug('generation interceptor ready');
 
-  // Hook via ST event system — fires reliably before every generation
   try {
     const ctx = getStContext();
     const events = ctx.eventTypes ?? ctx.event_types;
+
     if (events?.CHARACTER_MESSAGE_RENDERED) {
-      ctx.eventSource.on(events.CHARACTER_MESSAGE_RENDERED, async () => {
-        await new Promise(r => setTimeout(r, 500));
+      // CHARACTER_MESSAGE_RENDERED fires AFTER the message is in the DOM.
+      // This is where we consume the pending analysis and render the footer.
+      ctx.eventSource.on(events.CHARACTER_MESSAGE_RENDERED, (messageId: number) => {
+        console.warn('[RL] CHARACTER_MESSAGE_RENDERED', { messageId, hasPending: !!pendingResult });
         if (!getSettings().enabled) return;
-        const chat = ctx.chat as unknown[];
-        if (!chat || !chat.length) return;
-        showAnalyzing();
-        try {
-          await getCoordinator().handleGeneration({
-            chat,
-            contextSize: 8000,
-          });
-        } catch (e: unknown) {
-          console.error('[Relational Lens] message render hook failed', e);
-          clearAllPrompts();
+
+        const result = pendingResult;
+        pendingResult = null;
+
+        if (result) {
+          console.warn('[RL] saving analysis to message', messageId);
+          saveAnalysisToMessage(messageId, result);
         }
+
+        // Always render — may be restoring cached analysis on reload
+        setTimeout(() => renderAnalysisFooter(messageId), 100);
       });
 
-      // Hook MESSAGE_SWIPED to re-inject footer for the displayed swipe
+      // MESSAGE_SWIPED fires when user swipes to a different response.
+      // Re-read analysis from chat[mesId].extra and re-render footer.
       if (events.MESSAGE_SWIPED) {
-        ctx.eventSource.on(events.MESSAGE_SWIPED, (messageId: number) => {
-          console.warn('[Relational Lens] 👆 MESSAGE_SWIPED', { messageId });
+        ctx.eventSource.on(events.MESSAGE_SWIPED, (mesId: number) => {
+          console.warn('[RL] MESSAGE_SWIPED', { mesId });
           if (!getSettings().enabled) return;
-          const chat = ctx.chat as any[];
-          if (!chat?.length) return;
-          const msg = chat.find((m: any) => m?.index === messageId || m?.mesid === messageId);
-          if (!msg) return;
-          const m = msg as any;
-          const currentSwipeId = m.swipe_id ?? 0;
-          const analyses = m.extra?.relationalLens;
-          if (!analyses) return;
-          const result = analyses[String(currentSwipeId)];
-          if (result) {
-            injectMessageFooter(messageId, result, currentSwipeId);
-          }
+          setTimeout(() => renderAnalysisFooter(mesId), 100);
         });
-        console.warn('[Relational Lens] 👆 Swipe hook registered');
       }
-      console.warn('[Relational Lens] 📡 Message render hook registered');
+
+      console.warn('[Relational Lens] 📡 Event hooks registered');
+    } else {
+      console.warn('[RL] CHARACTER_MESSAGE_RENDERED not found in events', { keys: Object.keys(events ?? {}) });
     }
   } catch (e) {
-    console.warn('[Relational Lens] Could not register event hook', e);
+    console.warn('[Relational Lens] Could not register event hooks', e);
   }
 }
 

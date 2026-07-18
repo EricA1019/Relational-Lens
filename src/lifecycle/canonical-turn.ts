@@ -1,6 +1,8 @@
 export interface CanonicalTurn {
   previousAssistantContent: string;
   currentUserContent: string;
+  /** Index of the preceding assistant message in the chat array, or -1 if none. */
+  assistantMessageIndex: number;
 }
 
 export function resolveCanonicalTurn(chat: unknown[]): CanonicalTurn | null {
@@ -24,15 +26,16 @@ export function resolveCanonicalTurn(chat: unknown[]): CanonicalTurn | null {
     return null;
   }
   
-  const previousAssistant = [...messages.slice(0, currentUser.index)]
+  const previousAssistantEntry = [...indexed.slice(0, currentUser.index)]
     .reverse()
-    .find((message) => message.role === 'assistant');
+    .find(({ message }) => message.role === 'assistant');
   
   const currentUserContent = String(currentUser.message.content ?? currentUser.message.mes ?? '');
   if (!currentUserContent.trim()) return null;
   
   return {
-    previousAssistantContent: String(previousAssistant?.content ?? previousAssistant?.mes ?? ''),
+    previousAssistantContent: String(previousAssistantEntry?.message.content ?? previousAssistantEntry?.message.mes ?? ''),
     currentUserContent,
+    assistantMessageIndex: previousAssistantEntry?.index ?? -1,
   };
 }

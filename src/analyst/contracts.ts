@@ -35,5 +35,7 @@ export interface AnalysisResult {
     timestamp: number; // Date.now()
     fingerprint: string;
     previousFingerprint?: string;
+    /** Index of the preceding assistant message in the chat array */
+    messageIndex: number;
   };
 }
