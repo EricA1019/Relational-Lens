@@ -51,11 +51,21 @@ export class TurnCoordinator {
       ...turn,
     });
 
+    const getSwipeId = (): number => {
+      try {
+        const chat = context.chat as Array<any>;
+        const last = chat?.length ? chat[chat.length - 1] : null;
+        return typeof last?.swipe_id === 'number' ? last.swipe_id : 0;
+      } catch { return 0; }
+    };
+    const makeMeta = () => ({ turnNumber: (context.chat as any[])?.length ?? 0, swipeId: getSwipeId(), timestamp: Date.now(), fingerprint });
+
     const cached = turnCache.getCompleted(fingerprint);
     if (cached) {
       debug('cache hit — reusing brief');
-      this.injectBrief(cached.sceneBrief);
-      this.onAnalysisComplete?.(cached);
+      const enriched: AnalysisResult = { ...cached, _meta: makeMeta() };
+      this.injectBrief(enriched.sceneBrief);
+      this.onAnalysisComplete?.(enriched);
       return;
     }
 
@@ -63,8 +73,9 @@ export class TurnCoordinator {
     if (running) {
       debug('in-flight dedup — awaiting existing analysis');
       const result = await running;
-      this.injectBrief(result.sceneBrief);
-      this.onAnalysisComplete?.(result);
+      const enriched: AnalysisResult = { ...result, _meta: makeMeta() };
+      this.injectBrief(enriched.sceneBrief);
+      this.onAnalysisComplete?.(enriched);
       return;
     }
 
@@ -93,11 +104,18 @@ export class TurnCoordinator {
 
     const result = await turnCache.track(fingerprint, controller, promise);
     debug('analyst succeeded', { stance: result.sceneBrief.stance });
+
+    // Attach timeline metadata
+    const resultWithMeta: AnalysisResult = {
+      ...result,
+      _meta: makeMeta(),
+    };
+
     if (settings.persistentStateEnabled && result.durableChangeJustified && result.patch.length) {
       await saveRelationshipState(applyPatchTransactionally(state, result.patch));
     }
-    this.injectBrief(result.sceneBrief);
-    this.onAnalysisComplete?.(result);
+    this.injectBrief(resultWithMeta.sceneBrief);
+    this.onAnalysisComplete?.(resultWithMeta);
     updateStatusView('Ready.');
   }
 }

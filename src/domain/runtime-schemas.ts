@@ -20,9 +20,18 @@ const TurnObservationSchema = z.object({
   ambiguities: z.array(z.string()),
 });
 
+const TimelineMetaSchema = z.object({
+  turnNumber: z.number(),
+  swipeId: z.number(),
+  timestamp: z.number(),
+  fingerprint: z.string(),
+  previousFingerprint: z.string().optional(),
+});
+
 export const AnalysisResultSchema = z.object({
   observedTurn: TurnObservationSchema,
   durableChangeJustified: z.boolean(),
   patch: z.array(z.record(z.unknown())),
   sceneBrief: SceneBriefSchema,
+  _meta: TimelineMetaSchema.optional(),
 });

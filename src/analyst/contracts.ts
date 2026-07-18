@@ -28,4 +28,12 @@ export interface AnalysisResult {
   durableChangeJustified: boolean;
   patch: RelationshipPatchOperation[];
   sceneBrief: SceneBrief;
+  /** Timeline metadata — set by the coordinator, not by the analyst LLM */
+  _meta?: {
+    turnNumber: number;
+    swipeId: number;
+    timestamp: number; // Date.now()
+    fingerprint: string;
+    previousFingerprint?: string;
+  };
 }
