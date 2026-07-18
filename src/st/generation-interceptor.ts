@@ -4,6 +4,7 @@ import { clearAllPrompts, injectSceneBrief } from './prompt-injection.js';
 import { getSettings } from './settings-repository.js';
 import { createDebugLogger } from '../util/debug-logger.js';
 import { updateChatHeader, showAnalyzing, showError, removeChatHeader } from '../ui/chat-header.js';
+import { saveAnalysisToMessage, injectMessageFooter } from '../ui/message-footer.js';
 import { getStContext } from './context.js';
 import type { AnalysisResult } from '../analyst/contracts.js';
 
@@ -16,7 +17,18 @@ function getCoordinator(): TurnCoordinator {
     coordinator = new TurnCoordinator(
       new StConnectionProfileAnalystClient(),
       injectSceneBrief,
-      (result: AnalysisResult) => updateChatHeader(result),
+      (result: AnalysisResult) => {
+        updateChatHeader(result);
+        saveAnalysisToMessage(result);
+        // Inject footer into the last assistant message's DOM
+        const chat = getStContext().chat as any[];
+        if (chat?.length) {
+          const lastMsg = [...chat].reverse().find((m: any) => m?.role === 'assistant' || m?.is_user === false);
+          if (lastMsg?.index !== undefined) {
+            injectMessageFooter(lastMsg.index, result);
+          }
+        }
+      },
     );
   }
   return coordinator;
@@ -63,9 +75,7 @@ export function installGenerationInterceptor(): void {
     const events = ctx.eventTypes ?? ctx.event_types;
     if (events?.CHARACTER_MESSAGE_RENDERED) {
       ctx.eventSource.on(events.CHARACTER_MESSAGE_RENDERED, async () => {
-        // Delay to let ST finish DOM manipulation
         await new Promise(r => setTimeout(r, 500));
-        console.warn('[Relational Lens] 📡 Update after render');
         if (!getSettings().enabled) return;
         const chat = ctx.chat as unknown[];
         if (!chat || !chat.length) return;

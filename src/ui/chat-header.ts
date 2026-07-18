@@ -31,7 +31,7 @@ function getOrCreatePanel(): HTMLElement {
 
   const panel = document.createElement('div');
   panel.id = PANEL_ID;
-  panel.style.cssText = 'display:block;visibility:visible;padding:0.5rem;border:2px solid #ff0;background:#111;color:#fff;margin:0.5rem 0;z-index:9999;position:relative;';
+  panel.style.cssText = 'display:block;padding:0.3rem 0.6rem;border-bottom:1px solid rgba(255,255,255,0.1);background:transparent;color:inherit;margin:0;font-size:0.85em;opacity:0.7';
   panel.innerHTML = `
     <div style="display:flex;align-items:center;gap:0.5rem;cursor:pointer" id="${TOGGLE_ID}">
       <span style="font-weight:bold">🔍 Relational Lens</span>
