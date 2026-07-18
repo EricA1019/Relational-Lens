@@ -51,14 +51,20 @@ export class TurnCoordinator {
       ...turn,
     });
 
-    const getSwipeId = (): number => {
+    // Capture swipeId NOW — before analysis runs (swipe might change during)
+    const swipeId = (() => {
       try {
         const chat = context.chat as Array<any>;
         const last = chat?.length ? chat[chat.length - 1] : null;
         return typeof last?.swipe_id === 'number' ? last.swipe_id : 0;
       } catch { return 0; }
-    };
-    const makeMeta = () => ({ turnNumber: (context.chat as any[])?.length ?? 0, swipeId: getSwipeId(), timestamp: Date.now(), fingerprint });
+    })();
+    const makeMeta = () => ({
+      turnNumber: (context.chat as any[])?.length ?? 0,
+      swipeId,
+      timestamp: Date.now(),
+      fingerprint,
+    });
 
     const cached = turnCache.getCompleted(fingerprint);
     if (cached) {

@@ -90,6 +90,27 @@ export function installGenerationInterceptor(): void {
           clearAllPrompts();
         }
       });
+
+      // Hook MESSAGE_SWIPED to re-inject footer for the displayed swipe
+      if (events.MESSAGE_SWIPED) {
+        ctx.eventSource.on(events.MESSAGE_SWIPED, (messageId: number) => {
+          console.warn('[Relational Lens] 👆 MESSAGE_SWIPED', { messageId });
+          if (!getSettings().enabled) return;
+          const chat = ctx.chat as any[];
+          if (!chat?.length) return;
+          const msg = chat.find((m: any) => m?.index === messageId || m?.mesid === messageId);
+          if (!msg) return;
+          const m = msg as any;
+          const currentSwipeId = m.swipe_id ?? 0;
+          const analyses = m.extra?.relationalLens;
+          if (!analyses) return;
+          const result = analyses[String(currentSwipeId)];
+          if (result) {
+            injectMessageFooter(messageId, result, currentSwipeId);
+          }
+        });
+        console.warn('[Relational Lens] 👆 Swipe hook registered');
+      }
       console.warn('[Relational Lens] 📡 Message render hook registered');
     }
   } catch (e) {
